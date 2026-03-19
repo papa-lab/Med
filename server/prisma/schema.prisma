@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String        @id @default(cuid())
+  email          String        @unique
+  passwordHash   String
+  name           String
+  university     String?
+  yearOfStudy    Int?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  studyStreak    Int           @default(1)
+  telegramLinked Boolean       @default(false)
+  telegramHandle String?
+  discussions    Discussion[]
+  quizAttempts   QuizAttempt[]
+  progress       Progress[]
+  studySessions  StudySession[]
+  telegramCodes  TelegramLinkCode[]
+}
+
+model DiscussionTopic {
+  id        String       @id @default(cuid())
+  title     String
+  subject   String
+  createdAt DateTime     @default(now())
+  messages  Discussion[]
+}
+
+model Discussion {
+  id        String          @id @default(cuid())
+  content   String
+  createdAt DateTime        @default(now())
+  userId    String
+  topicId   String
+  user      User            @relation(fields: [userId], references: [id])
+  topic     DiscussionTopic @relation(fields: [topicId], references: [id])
+}
+
+model Quiz {
+  id          String        @id @default(cuid())
+  title       String
+  subject     String
+  topic       String
+  description String?
+  questions   Question[]
+  attempts    QuizAttempt[]
+}
+
+model Question {
+  id          String  @id @default(cuid())
+  quizId       String
+  prompt      String
+  optionA     String
+  optionB     String
+  optionC     String
+  optionD     String
+  answer      String
+  explanation String?
+  quiz        Quiz    @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model QuizAttempt {
+  id         String   @id @default(cuid())
+  userId     String
+  quizId     String
+  score      Float
+  correct    Int
+  total      Int
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  quiz       Quiz     @relation(fields: [quizId], references: [id])
+}
+
+model Progress {
+  id         String   @id @default(cuid())
+  userId     String
+  subject    String
+  topic      String
+  completed  Boolean  @default(false)
+  mastery    Float    @default(0)
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model StudySession {
+  id          String   @id @default(cuid())
+  userId      String
+  minutes     Int
+  source      String
+  studiedOn   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model TelegramLinkCode {
+  id         String   @id @default(cuid())
+  userId     String
+  code       String   @unique
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+}
