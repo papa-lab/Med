@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   Home, BookOpen, MessageCircle, Users, Settings,
   TrendingUp, Clock, Target,
-  HelpCircle, Layers, FileText, Calendar, Zap,
+  HelpCircle, Layers, Calendar, Zap,
   ChevronRight, Flame, LogOut, Loader2, MessageSquarePlus
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
